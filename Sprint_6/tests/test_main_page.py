@@ -1,8 +1,21 @@
-import pytest
+import sys
+import os
 import allure
-from main_page import MainPage
+import pytest
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
 from locators.main_page_locators import MainPageLocators
+from pages.main_page import MainPage
 from data import TestData
+import logging
+
+# Настройка логирования
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 class TestMainPage:
@@ -29,12 +42,41 @@ class TestMainPage:
     ):
         """Проверяет, что ответ на вопрос FAQ содержит ожидаемый текст."""
         main_page = MainPage(driver)
-        main_page.scroll_to_faq_section()
         
+        # Логируем начало теста
+        logger.info(f"Starting FAQ test for question {question_number}")
+        
+        # Ожидание и прокрутка к FAQ с логированием
+        logger.info("Waiting for FAQ section to be visible")
+        WebDriverWait(driver, 15).until(
+            EC.visibility_of_element_located(MainPageLocators.faq_section)
+        )
+        
+        logger.info("Scrolling to FAQ section")
+        faq_section = driver.find_element(*MainPageLocators.faq_section)
+        driver.execute_script("arguments[0].scrollIntoView(true);", faq_section)
+        
+        # Ожидание завершения анимации прокрутки
+        WebDriverWait(driver, 5).until(
+            lambda d: d.execute_script("return document.readyState") == 'complete'
+        )
+        
+        # Логируем попытку клика на вопрос
+        logger.info(f"Clicking on FAQ question {question_number}")
+        
+        # Проверяем существование вопроса перед кликом
+        question_locator = MainPageLocators.faq_questions_items[question_number]
+        WebDriverWait(driver, 15).until(
+            EC.element_to_be_clickable(question_locator)
+        )
+        
+        # Основная проверка теста
         assert main_page.verify_faq_answer_contains_text(
             question_number, expected_text
         ), (f'Ответ на вопрос {question_number} не содержит '
             f'ожидаемый текст')
+            
+        logger.info(f"FAQ test for question {question_number} passed")
 
     @allure.feature('Навигация')
     @allure.story('Переход на страницу заказа через кнопку в хедере')
@@ -85,13 +127,30 @@ class TestMainPage:
         main_page = MainPage(driver)
         original_tab = driver.current_window_handle
         
+        logger.info("Clicking on Yandex logo")
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable(MainPageLocators.logo_yandex)
+        )
         main_page.click_on_element(MainPageLocators.logo_yandex)
+        
+        # Ожидание новой вкладки
+        WebDriverWait(driver, 10).until(
+            lambda d: len(d.window_handles) > 1
+        )
+        
         main_page.switch_to_next_tab()
+        
+        # Ожидание загрузки новой страницы
+        WebDriverWait(driver, 15).until(
+            lambda d: any(domain in d.current_url for domain in ['dzen.ru', 'yandex.ru'])
+        )
         
         current_url = main_page.get_current_url()
         assert any(domain in current_url for domain in ['dzen.ru', 'yandex.ru']), (
             f'Ожидался переход на Дзен или Яндекс, текущий URL: {current_url}'
         )
+        
+        logger.info("Yandex logo test passed")
         
         # Возвращаемся обратно и закрываем вкладку
         driver.close()
@@ -102,16 +161,16 @@ class TestMainPage:
     def test_main_page_elements_are_displayed(self, driver):
         """Проверяет отображение основных элементов главной страницы."""
         main_page = MainPage(driver)
-        
-        assert main_page.check_displaying_of_element(
+    
+        assert main_page.check_displaying_of_element_by_locator(
             MainPageLocators.main_header
         ), 'Главный заголовок не отображается'
-        
-        assert main_page.check_displaying_of_element(
+    
+        assert main_page.check_displaying_of_element_by_locator(
             MainPageLocators.faq_section
         ), 'Раздел FAQ не отображается'
-        
-        assert main_page.check_displaying_of_element(
+    
+        assert main_page.check_displaying_of_element_by_locator(
             MainPageLocators.order_button_in_header
         ), 'Кнопка заказа в хедере не отображается'
 

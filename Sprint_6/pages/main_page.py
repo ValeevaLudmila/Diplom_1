@@ -13,6 +13,15 @@ class MainPage(BasePage):
     def __init__(self, driver):
         self.driver = driver
         self.locators = MainPageLocators() 
+
+    def check_element_displayed(self, locator):
+        """Проверяет отображение элемента по локатору."""
+        element = self.wait_visibility_of_element(locator)
+        return element.is_displayed()
+
+    def get_current_url(self):
+        """Возвращает текущий URL"""
+        return self.driver.current_url
     
     def open_main_page(self):
         """Открыть главную страницу"""
@@ -116,3 +125,5 @@ class MainPage(BasePage):
         self.switch_to_next_tab()
         current_url = self.get_current_url()
         return 'dzen.ru' in current_url or 'yandex.ru' in current_url
+    
+    
