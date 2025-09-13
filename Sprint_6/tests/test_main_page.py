@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class TestMainPage:
-    """Тесты главной страницы сервиса Самокат."""
+    # Тесты главной страницы сервиса Самокат.
 
     @allure.feature('FAQ раздел')
     @allure.story('Проверка ответов на вопросы в FAQ')
@@ -40,7 +40,7 @@ class TestMainPage:
     def test_faq_question_contains_expected_text(
         self, driver, question_number, expected_text
     ):
-        """Проверяет, что ответ на вопрос FAQ содержит ожидаемый текст."""
+        # Проверяет, что ответ на вопрос FAQ содержит ожидаемый текст.
         main_page = MainPage(driver)
         
         # Логируем начало теста
@@ -81,7 +81,7 @@ class TestMainPage:
     @allure.feature('Навигация')
     @allure.story('Переход на страницу заказа через кнопку в хедере')
     def test_header_order_button_redirects_to_order_page(self, driver):
-        """Проверяет переход на страницу заказа через кнопку в хедере."""
+        # Проверяет переход на страницу заказа через кнопку в хедере.
         main_page = MainPage(driver)
         main_page.click_header_order_button()
         
@@ -93,7 +93,7 @@ class TestMainPage:
     @allure.feature('Навигация')
     @allure.story('Переход на страницу заказа через кнопку в основном разделе')
     def test_main_order_button_redirects_to_order_page(self, driver):
-        """Проверяет переход на страницу заказа через кнопку в основном разделе."""
+        # Проверяет переход на страницу заказа через кнопку в основном разделе.
         main_page = MainPage(driver)
         main_page.click_main_order_button()
         
@@ -105,7 +105,7 @@ class TestMainPage:
     @allure.feature('Навигация')
     @allure.story('Редирект на главную страницу при клике на логотип Самоката')
     def test_scooter_logo_redirects_to_main_page(self, driver):
-        """Проверяет редирект на главную страницу при клике на логотип Самоката."""
+        # Проверяет редирект на главную страницу при клике на логотип Самоката.
         main_page = MainPage(driver)
         
         # Переходим на другую страницу для теста редиректа
@@ -123,7 +123,7 @@ class TestMainPage:
     @allure.feature('Навигация')
     @allure.story('Открытие Дзена в новой вкладке при клике на логотип Яндекса')
     def test_yandex_logo_opens_dzen_in_new_tab(self, driver):
-        """Проверяет открытие Дзена в новой вкладке при клике на логотип Яндекса."""
+        # Проверяет открытие Дзена в новой вкладке при клике на логотип Яндекса.
         main_page = MainPage(driver)
         original_tab = driver.current_window_handle
         
@@ -159,7 +159,7 @@ class TestMainPage:
     @allure.feature('Валидация')
     @allure.story('Проверка отображения основных элементов страницы')
     def test_main_page_elements_are_displayed(self, driver):
-        """Проверяет отображение основных элементов главной страницы."""
+        # Проверяет отображение основных элементов главной страницы.
         main_page = MainPage(driver)
     
         assert main_page.check_displaying_of_element_by_locator(
@@ -177,7 +177,7 @@ class TestMainPage:
     @allure.feature('Валидация')
     @allure.story('Проверка кликабельности кнопок заказа')
     def test_order_buttons_are_clickable(self, driver):
-        """Проверяет, что кнопки заказа кликабельны."""
+        # Проверяет, что кнопки заказа кликабельны.
         main_page = MainPage(driver)
         
         header_button = main_page.wait_visibility_of_element(

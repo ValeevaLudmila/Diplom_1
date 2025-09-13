@@ -4,11 +4,9 @@ class MainPageLocators:
     main_header = (By.XPATH, '//div[contains(@class, "Home_Header__iJKdX")]')
     faq_section = (By.XPATH, '//div[contains(@class, "Home_FAQ")]')
     
-    # Основные локаторы кнопок заказа
     order_button_in_main = (By.XPATH, "//button[contains(@class, 'Button_Button') and contains(text(), 'Заказать')]")
     order_button_in_header = (By.XPATH, "//button[contains(@class, 'Button_Button__ra12g') and not(contains(@class, 'Button_UltraBig__UU3Lp')) and text()='Заказать']")
     
-    # Альтернативные локаторы (добавьте эти строки)
     order_button_in_header_alt = (By.XPATH, "//div[contains(@class, 'Header_Nav')]//button[text()='Заказать']")
     order_button_in_main_alt = (By.CSS_SELECTOR, "button.Button_Button__ra12g.Button_UltraBig__UU3Lp")
     

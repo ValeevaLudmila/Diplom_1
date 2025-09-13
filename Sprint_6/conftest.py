@@ -10,7 +10,6 @@ def driver():
     service = Service(GeckoDriverManager().install())
     driver = webdriver.Firefox(service=service)
     
-    # Установите неявные ожидания
     driver.implicitly_wait(10)
     
     try:

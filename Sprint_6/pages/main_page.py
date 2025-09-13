@@ -15,20 +15,20 @@ class MainPage(BasePage):
         self.locators = MainPageLocators() 
 
     def check_element_displayed(self, locator):
-        """Проверяет отображение элемента по локатору."""
+        # Проверяет отображение элемента по локатору.
         element = self.wait_visibility_of_element(locator)
         return element.is_displayed()
 
     def get_current_url(self):
-        """Возвращает текущий URL"""
+        # Возвращает текущий URL
         return self.driver.current_url
     
     def open_main_page(self):
-        """Открыть главную страницу"""
+        # Открыть главную страницу
         self.open()
     
     def click_order_button(self, button_type="main"):
-        """Клик по кнопке заказа"""
+        # Клик по кнопке заказа
         if button_type == "main":
             button = self.wait_for_element(MainPageLocators.order_button_in_main)
         else:
@@ -36,16 +36,16 @@ class MainPage(BasePage):
         button.click()
     
     def is_faq_section_visible(self):
-        """Проверка видимости раздела FAQ"""
+        # Проверка видимости раздела FAQ
         return self.is_element_displayed(MainPageLocators.faq_section)
     
     def is_header_visible(self):
-        """Проверка видимости заголовка"""
+        # Проверка видимости заголовка
         return self.is_element_displayed(MainPageLocators.main_header)
 
     @allure.step('Нажать кнопку "Заказать" в хедере')
     def click_header_order_button(self):
-        """Кликает на кнопку заказа в хедере."""
+        # Кликает на кнопку заказа в хедере.
         try:
             element = self.driver.find_element(*MainPageLocators.order_button_in_header)
             self.driver.execute_script("arguments[0].click();", element)
@@ -55,7 +55,7 @@ class MainPage(BasePage):
             self.driver.execute_script("arguments[0].click();", element)
 
     def click_main_order_button(self):
-        """Кликает на кнопку заказа в основном разделе с явным ожиданием."""
+        # Кликает на кнопку заказа в основном разделе с явным ожиданием.
         try:
             # Ждем, пока кнопка станет кликабельной (до 10 секунд)
             wait = WebDriverWait(self.driver, 10)

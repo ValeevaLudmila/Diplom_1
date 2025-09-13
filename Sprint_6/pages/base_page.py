@@ -12,18 +12,18 @@ class BasePage:
         self.base_url = "https://qa-scooter.praktikum-services.ru/"
     
     def open(self, url_path=""):
-        """Открыть страницу"""
+        # Открыть страницу
         full_url = self.base_url + url_path
         self.driver.get(full_url)
     
     def wait_for_element(self, locator, timeout=10):
-        """Ожидание элемента"""
+        # Ожидание элемента
         return WebDriverWait(self.driver, timeout).until(
             EC.visibility_of_element_located(locator)
         )
     
     def is_element_displayed(self, locator, timeout=10):
-        """Проверка отображения элемента"""
+        # Проверка отображения элемента
         try:
             element = self.wait_for_element(locator, timeout)
             return element.is_displayed()
@@ -42,7 +42,7 @@ class BasePage:
     
     @allure.step('Проверить что элемент по локатору отобразился')
     def check_displaying_of_element_by_locator(self, locator):
-        """Проверяет отображение элемента по локатору."""
+        # Проверяет отображение элемента по локатору.
         try:
             element = self.driver.find_element(*locator)
             return element.is_displayed()
@@ -51,7 +51,7 @@ class BasePage:
     
     @allure.step('Проверить наличие элемента')
     def is_element_present(self, locator):
-        """Проверяет наличие элемента на странице."""
+        # Проверяет наличие элемента на странице.
         try:
             self.driver.find_element(*locator)
             return True

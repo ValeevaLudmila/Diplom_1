@@ -11,20 +11,12 @@ from selenium.webdriver.common.by import By
 from locators.order_page_locators import OrderPageLocators
 
 class TestOrderPositive:
-    """Позитивные тесты создания заказа."""
+    # Позитивные тесты создания заказа.
 
     @allure.feature('Создание заказа')
     @allure.story('Успешное создание заказа через кнопку в хедере')
     @allure.severity(allure.severity_level.BLOCKER)
     def test_create_order_via_header_button(self, driver):
-        """
-        Проверяет успешное создание заказа через кнопку в хедере.
-        
-        Шаги:
-        1. Нажать кнопку «Заказать» в хедере
-        2. Заполнить форму заказа
-        3. Проверить успешное создание заказа
-        """
         
         main_page = MainPage(driver)
         order_page = OrderPage(driver)
@@ -50,14 +42,6 @@ class TestOrderPositive:
     @allure.story('Успешное создание заказа через кнопку в основном разделе')
     @allure.severity(allure.severity_level.BLOCKER)
     def test_create_order_via_main_button(self, driver):
-        """
-        Проверяет успешное создание заказа через кнопку в основном разделе.
-        
-        Шаги:
-        1. Нажать кнопку «Заказать» в основном разделе
-        2. Заполнить форму заказа
-        3. Проверить успешное создание заказа
-        """
         
         main_page = MainPage(driver)
         order_page = OrderPage(driver)
@@ -83,16 +67,6 @@ class TestOrderPositive:
     @allure.story('Создание заказа с разными способами выбора даты')
     @allure.severity(allure.severity_level.NORMAL)
     def test_create_order_with_different_date_selection_methods(self, driver):
-        """
-        Проверяет создание заказа с разными способами выбора даты.
-        
-        Шаги:
-        1. Нажать кнопку «Заказать»
-        2. Заполнить первую форму
-        3. Проверить разные способы выбора даты
-        4. Заполнить вторую форму
-        5. Проверить успешное создание заказа
-        """
         
         main_page = MainPage(driver)
         order_page = OrderPage(driver)
@@ -118,19 +92,11 @@ class TestOrderPositive:
 
 
 class TestOrderNavigation:
-    """Тесты навигации при создании заказа."""
-
+    
     @allure.feature('Навигация')
     @allure.story('Возврат к первой форме после заполнения')
     @allure.severity(allure.severity_level.MINOR)
     def test_navigation_between_forms(self, driver):
-        """
-        Проверяет навигацию между формами заказа.
-        
-        Шаги:
-        1. Начать заполнение формы
-        2. Проверить элементы навигации
-        """
         
         main_page = MainPage(driver)
         order_page = OrderPage(driver)
@@ -152,19 +118,11 @@ class TestOrderNavigation:
     ids=['user_1', 'user_2']
 )
 class TestOrderParametrized:
-    """Параметризованные тесты создания заказа."""
+    # Параметризованные тесты создания заказа.
 
     @allure.feature('Создание заказа')
     @allure.story('Параметризованное тестирование с разными пользователями')
     def test_create_order_with_different_users(self, driver, user_data, test_description):
-        """
-        Параметризованный тест создания заказа с разными пользователями.
-        
-        Шаги:
-        1. Нажать кнопку «Заказать»
-        2. Заполнить формы с разными данными пользователей
-        3. Проверить успешное создание заказа
-        """
         
         main_page = MainPage(driver)
         order_page = OrderPage(driver)
