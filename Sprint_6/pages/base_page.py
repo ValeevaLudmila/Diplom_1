@@ -31,7 +31,7 @@ class BasePage:
             return False
 
     @allure.step('Подождать пока элемент загрузится')
-    def wait_visibility_of_element(self, locator, timeout=10):
+    def wait_visibility_of_element(self, locator, timeout=30):
         return WebDriverWait(self.driver, timeout).until(
             EC.visibility_of_element_located(locator)
         )

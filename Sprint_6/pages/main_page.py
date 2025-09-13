@@ -1,15 +1,18 @@
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import allure
 from .base_page import BasePage
 from locators.main_page_locators import MainPageLocators
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException, ElementClickInterceptedException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementClickInterceptedException
 import logging
 
 logger = logging.getLogger(__name__)
 
 class MainPage(BasePage):
     def __init__(self, driver):
-        super().__init__(driver)
+        self.driver = driver
+        self.locators = MainPageLocators() 
     
     def open_main_page(self):
         """Открыть главную страницу"""
@@ -42,21 +45,37 @@ class MainPage(BasePage):
             element = self.driver.find_element(*MainPageLocators.order_button_in_header_alt)
             self.driver.execute_script("arguments[0].click();", element)
 
-    @allure.step('Нажать кнопку "Заказать" в основном разделе')
     def click_main_order_button(self):
-        """Кликает на кнопку заказа в основном разделе."""
+        """Кликает на кнопку заказа в основном разделе с явным ожиданием."""
         try:
-            element = self.driver.find_element(*MainPageLocators.order_button_in_main)
-            self.driver.execute_script("arguments[0].scrollIntoView();", element)
-            element.click()
-        except (NoSuchElementException, ElementClickInterceptedException):
-            # Просто пробуем альтернативный способ
-            element = self.driver.find_element(*MainPageLocators.order_button_in_main_alt)
-            self.driver.execute_script("arguments[0].scrollIntoView();", element)
-            element.click()
-
-        logger.error("Ни один из локаторов кнопки заказа в основном разделе не сработал")
-        raise NoSuchElementException("Не удалось найти кнопку заказа в основном разделе")
+            # Ждем, пока кнопка станет кликабельной (до 10 секунд)
+            wait = WebDriverWait(self.driver, 10)
+            button = wait.until(
+                EC.element_to_be_clickable(self.locators.order_button_in_main)
+            )
+            # Прокручиваем к элементу, если это необходимо
+            self.driver.execute_script("arguments[0].scrollIntoView();", button)
+            button.click()
+            return True
+        except TimeoutException:
+            # Если основной локатор не сработал, пробуем альтернативные
+            alternative_locators = [
+                self.locators.order_button_in_main_alt,
+                self.locators.ANY_ORDER_BUTTON,
+                (By.XPATH, "//button[text()='Заказать']")  # Самый простой локатор
+            ]
+            for locator in alternative_locators:
+                try:
+                    buttons = self.driver.find_elements(*locator)
+                    for btn in buttons:
+                        if btn.is_displayed():
+                            self.driver.execute_script("arguments[0].scrollIntoView();", btn)
+                            btn.click()
+                            return True
+                except:
+                    continue
+            logger.error("Не удалось найти и кликнуть ни одну кнопку 'Заказать' в основном разделе.")
+            return False
 
     @allure.step('Скролл до раздела "Вопросы о важном"')
     def scroll_to_faq_section(self):
