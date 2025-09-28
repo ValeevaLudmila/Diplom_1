@@ -2,3 +2,4 @@ allure-results/
 allure-report/history/
 *.tmp
 *.tmp.*
+**/__pycache__/
