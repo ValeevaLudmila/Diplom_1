@@ -2,7 +2,7 @@ import requests
 import allure
 import pytest
 from urls import Url
-from data import DataForOrder, StatusCode, TestData, ResponseBody, Flags
+from data import DataForOrder, StatusCode, TestData, ResponseBody
 
 
 class TestAcceptOrder:
@@ -16,7 +16,6 @@ class TestAcceptOrder:
         
         assert response.status_code == StatusCode.OK
         assert response.json() == ResponseBody.ORDER_ACCEPT_SUCCESS
-        # Отмена заказа автоматически выполнится в фикстуре create_order_with_id
 
     @allure.title('Ошибка при принятии заказа без id курьера')
     def test_accept_order_without_courier_id(self, create_order_for_accept_test):
@@ -25,9 +24,9 @@ class TestAcceptOrder:
         with allure.step("Попытаться принять заказ без ID курьера"):
             response = requests.put(f'{Url.MAIN_URL}{Url.ORDER_ACCEPT}{order_id}', params={})
         
+        # Согласно документации: "Нет id курьера" -> 400
         assert response.status_code == StatusCode.BAD_REQUEST
-        assert "message" in response.json()
-        # Отмена заказа автоматически выполнится в фикстуре create_order_for_accept_test
+        assert response.json() == {'code': 400, 'message': 'Недостаточно данных для поиска'}
 
     @allure.title('Ошибка при принятии заказа с несуществующим id курьера')
     def test_accept_order_with_nonexistent_courier(self, create_order_for_accept_test):
@@ -38,16 +37,15 @@ class TestAcceptOrder:
         
         assert response.status_code == StatusCode.NOT_FOUND
         assert response.json() == ResponseBody.COURIER_ACCOUNT_NOT_FOUND
-        # Отмена заказа автоматически выполнится в фикстуре create_order_for_accept_test
 
-    @allure.title('Ошибка при принятии заказа без id заказа')
+    @allure.title('Ошибка при принятии заказа без id заказа') # Баг: 404 вместо 400
     def test_accept_order_without_order_id(self, create_courier):
         with allure.step("Попытаться принять заказ без ID заказа"):
             response = requests.put(f'{Url.MAIN_URL}{Url.ORDER_ACCEPT}', params={"courierId": create_courier[4]})
         
+        # Согласно документации: "Запрос без номера" -> 400
         assert response.status_code == StatusCode.BAD_REQUEST
-        assert "message" in response.json()
-        # В этом тесте заказ не создается, поэтому отмена не нужна
+        assert response.json() == {'code': 400, 'message': 'Недостаточно данных для поиска'}
 
     @allure.title('Ошибка при принятии заказа с несуществующим id заказа')
     def test_accept_order_with_nonexistent_order(self, create_courier):
@@ -55,5 +53,4 @@ class TestAcceptOrder:
             response = requests.put(f'{Url.MAIN_URL}{Url.ORDER_ACCEPT}{TestData.NONEXISTENT_ORDER_ID}', params={"courierId": create_courier[4]})
         
         assert response.status_code == StatusCode.NOT_FOUND
-        assert response.json() == ResponseBody.COURIER_ACCOUNT_NOT_FOUND
-        # В этом тесте заказ не создается, поэтому отмена не нужна
+        assert response.json() == ResponseBody.ORDER_NOT_FOUND

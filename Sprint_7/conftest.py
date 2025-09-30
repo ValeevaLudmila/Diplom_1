@@ -3,6 +3,8 @@ import requests
 import generators
 from urls import Url
 from data import DataForOrder, Flags
+import time
+import random
 
 
 @pytest.fixture
@@ -72,10 +74,19 @@ def create_courier():
 @pytest.fixture
 def generate_courier_data():
     name = generators.name_generator()
-    login = generators.login_generator()
+    # Добавляем уникальность к логину
+    timestamp = str(int(time.time() * 1000))[-6:]
+    random_num = str(random.randint(100, 999))
+    login = generators.login_generator() + timestamp + random_num
     password = generators.password_generator()
     creation_courier_body = {'login': login, 'password': password, 'firstName': name}
     login_courier_body = {'login': login, 'password': password}
     yield [creation_courier_body, login_courier_body]
-    login_courier = requests.post(f'{Url.MAIN_URL}{Url.COURIER_LOGIN}', json=login_courier_body)
-    requests.delete(f'{Url.MAIN_URL}{Url.COURIER_DELETE}{login_courier.json()["id"]}')
+    
+    # Безопасное удаление - проверяем, что курьер создался
+    try:
+        login_courier = requests.post(f'{Url.MAIN_URL}{Url.COURIER_LOGIN}', json=login_courier_body)
+        if login_courier.status_code == 200 and 'id' in login_courier.json():
+            requests.delete(f'{Url.MAIN_URL}{Url.COURIER_DELETE}{login_courier.json()["id"]}')
+    except Exception as e:
+        print(f"Ошибка при очистке курьера: {e}")

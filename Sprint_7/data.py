@@ -1,4 +1,3 @@
-# data.py
 import generators
 
 
@@ -77,7 +76,6 @@ class DataForOrder:
         ("с несуществующим id заказа", TestData.NONEXISTENT_ORDER_ID, "real", StatusCode.NOT_FOUND),
     ]
     
-    # Добавить параметры для тестирования цветов
     COLOR_TEST_PARAMS = [
         ["BLACK"], 
         ["GREY"], 
@@ -98,9 +96,9 @@ class ResponseBody:
     ORDER_ACCEPT_SUCCESS = {'ok': True}
     COURIER_NAME_ALREADY_EXIST = {'code': 409, 'message': 'Этот логин уже используется. Попробуйте другой.'}
     COURIER_REGISTRATION_NOT_ENOUGH_DATA = {'code': 400, 'message': 'Недостаточно данных для создания учетной записи'}
-    COURIER_ACCOUNT_NOT_FOUND = {'code': 404, 'message': 'Учетная запись не найдена'}
+    COURIER_ACCOUNT_NOT_FOUND = {"code": 404, "message": "Учетная запись не найдена"}
     COURIER_LOGIN_NOT_ENOUCH_DATA = {'code': 400, 'message': 'Недостаточно данных для входа'}
-    ORDER_NOT_FOUND = {'code': 404, 'message': 'Заказ не найден'}
+    ORDER_NOT_FOUND = {"code": 404, "message": "Заказ не найден"}
     ORDER_TRACK_MISSING = {'code': 400, 'message': 'Недостаточно данных для поиска'}
 
 class Flags:

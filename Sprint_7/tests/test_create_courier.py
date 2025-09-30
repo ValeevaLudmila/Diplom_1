@@ -3,11 +3,11 @@ import allure
 import pytest
 import sys
 import os
-from urls import Url
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from data import DataForOrder, StatusCode, TestData, ResponseBody, Flags
+from urls import Url
+from data import ResponseBody, DataForRegistration, StatusCode
 from generators import login_generator, password_generator, name_generator
 
 
