@@ -1,59 +1,59 @@
 import requests
 import allure
 import pytest
-from data import Url
+from urls import Url
+from data import DataForOrder, StatusCode, TestData, ResponseBody, Flags
 
 
 class TestAcceptOrder:
 
     @allure.title('Успешное принятие заказа')
-    def test_accept_order_success(self, create_courier):
-        order_response = requests.post(f'{Url.MAIN_URL}{Url.POST_CREATING_ORDER}', json={
-            "firstName": "Иван",
-            "lastName": "Ульянов",
-            "address": "Борисоглебская",
-            "metroStation": 7,
-            "phone": "+7 904 356 47 53",
-            "rentTime": 1,
-            "deliveryDate": "2025-09-27",
-            "comment": "тест",
-            "color": ["BLACK"]
-        })
-        order_track = order_response.json()["track"]
-        order_id = requests.get(f'{Url.MAIN_URL}{Url.Get_ORDER_BY_NUMBER}?t={order_track}').json().get("order", {}).get("id")
-        response = requests.put(f'{Url.MAIN_URL}{Url.ORDER_ACCEPT}{order_id}', params={"courierId": create_courier[4]})
-        assert response.status_code == 200
-        requests.put(f'{Url.MAIN_URL}{Url.ORDER_CANCEL}', params={"track": order_track})
+    def test_accept_order_success(self, create_courier, create_order_with_id):
+        order_track, order_id = create_order_with_id
+        
+        with allure.step("Принять заказ курьером"):
+            response = requests.put(f'{Url.MAIN_URL}{Url.ORDER_ACCEPT}{order_id}', params={"courierId": create_courier[4]})
+        
+        assert response.status_code == StatusCode.OK
+        assert response.json() == ResponseBody.ORDER_ACCEPT_SUCCESS
+        # Отмена заказа автоматически выполнится в фикстуре create_order_with_id
 
-    @pytest.mark.parametrize("scenario,order_id,courier_id,expected_status", [
-        ("без id курьера", "real", "", 400),
-        ("с несуществующим id курьера", "real", 999999, 404),
-        ("без id заказа", "", "real", 400), # Баг: 404 вместо 400
-        ("с несуществующим id заказа", 999999, "real", 404),
-    ])
-    
-    @allure.title('Ошибка при принятии заказа: {scenario}')
-    def test_accept_order_errors_parametrized(self, create_courier, scenario, order_id, courier_id, expected_status):
-        if order_id == "real":
-            order_response = requests.post(f'{Url.MAIN_URL}{Url.POST_CREATING_ORDER}', json={
-                "firstName": "Тест", "lastName": "Тестов", "address": "Адрес",
-                "metroStation": 4, "phone": "+7 800 355 35 35", "rentTime": 1,
-                "deliveryDate": "2025-01-01", "comment": "тест", "color": ["BLACK"]
-            })
-            real_order_id = requests.get(f'{Url.MAIN_URL}{Url.Get_ORDER_BY_NUMBER}?t={order_response.json()["track"]}').json().get("order", {}).get("id")
-            used_order_id = real_order_id
-            order_track = order_response.json()["track"]
-        else:
-            used_order_id = order_id
-            order_track = None
-        if courier_id == "real":
-            used_courier_id = create_courier[4]
-        else:
-            used_courier_id = courier_id
-        params = {}
-        if used_courier_id != "":
-            params["courierId"] = used_courier_id
-        response = requests.put(f'{Url.MAIN_URL}{Url.ORDER_ACCEPT}{used_order_id}', params=params)
-        assert response.status_code == expected_status
-        if order_track:
-            requests.put(f'{Url.MAIN_URL}{Url.ORDER_CANCEL}', params={"track": order_track})
+    @allure.title('Ошибка при принятии заказа без id курьера')
+    def test_accept_order_without_courier_id(self, create_order_for_accept_test):
+        order_track, order_id = create_order_for_accept_test
+        
+        with allure.step("Попытаться принять заказ без ID курьера"):
+            response = requests.put(f'{Url.MAIN_URL}{Url.ORDER_ACCEPT}{order_id}', params={})
+        
+        assert response.status_code == StatusCode.BAD_REQUEST
+        assert "message" in response.json()
+        # Отмена заказа автоматически выполнится в фикстуре create_order_for_accept_test
+
+    @allure.title('Ошибка при принятии заказа с несуществующим id курьера')
+    def test_accept_order_with_nonexistent_courier(self, create_order_for_accept_test):
+        order_track, order_id = create_order_for_accept_test
+        
+        with allure.step("Попытаться принять заказ с несуществующим курьером"):
+            response = requests.put(f'{Url.MAIN_URL}{Url.ORDER_ACCEPT}{order_id}', params={"courierId": TestData.NONEXISTENT_COURIER_ID_FOR_ORDER})
+        
+        assert response.status_code == StatusCode.NOT_FOUND
+        assert response.json() == ResponseBody.COURIER_ACCOUNT_NOT_FOUND
+        # Отмена заказа автоматически выполнится в фикстуре create_order_for_accept_test
+
+    @allure.title('Ошибка при принятии заказа без id заказа')
+    def test_accept_order_without_order_id(self, create_courier):
+        with allure.step("Попытаться принять заказ без ID заказа"):
+            response = requests.put(f'{Url.MAIN_URL}{Url.ORDER_ACCEPT}', params={"courierId": create_courier[4]})
+        
+        assert response.status_code == StatusCode.BAD_REQUEST
+        assert "message" in response.json()
+        # В этом тесте заказ не создается, поэтому отмена не нужна
+
+    @allure.title('Ошибка при принятии заказа с несуществующим id заказа')
+    def test_accept_order_with_nonexistent_order(self, create_courier):
+        with allure.step("Попытаться принять несуществующий заказ"):
+            response = requests.put(f'{Url.MAIN_URL}{Url.ORDER_ACCEPT}{TestData.NONEXISTENT_ORDER_ID}', params={"courierId": create_courier[4]})
+        
+        assert response.status_code == StatusCode.NOT_FOUND
+        assert response.json() == ResponseBody.COURIER_ACCOUNT_NOT_FOUND
+        # В этом тесте заказ не создается, поэтому отмена не нужна

@@ -1,34 +1,33 @@
 import requests
 import allure
-from data import Url
+from urls import Url
+from data import DataForOrder, StatusCode, TestData, ResponseBody, Flags
 
 
 class TestGetOrderByTrack:
 
     @allure.title('Успешное получение заказа')
     def test_get_order_success(self):
-        order_response = requests.post(f'{Url.MAIN_URL}{Url.POST_CREATING_ORDER}', json={
-            "firstName": "Тест",
-            "lastName": "Тестов",
-            "address": "Адрес",
-            "metroStation": 4,
-            "phone": "+7 800 355 35 35",
-            "rentTime": 1,
-            "deliveryDate": "2025-01-01",
-            "comment": "тест",
-            "color": ["BLACK"]
-        })
+        with allure.step("Создать заказ"):
+            order_response = requests.post(f'{Url.MAIN_URL}{Url.POST_CREATING_ORDER}', json=DataForOrder.ORDER_DATA_FOR_TRACK_TEST)
         track = order_response.json()["track"]
-        response = requests.get(f'{Url.MAIN_URL}{Url.Get_ORDER_BY_NUMBER}?t={track}')
-        assert response.status_code == 200 and "order" in response.json()
-        requests.put(f'{Url.MAIN_URL}{Url.ORDER_CANCEL}', params={"track": track})
+        with allure.step("Получить заказ по треку"):
+            response = requests.get(f'{Url.MAIN_URL}{Url.Get_ORDER_BY_NUMBER}?t={track}')
+        # Проверка успешного ответа - верно
+        assert response.status_code == StatusCode.OK and Flags.ORDER_IN_RESPONSE in response.json()
+        with allure.step("Отменить заказ"):
+            requests.put(f'{Url.MAIN_URL}{Url.ORDER_CANCEL}', params={"track": track})
 
     @allure.title('Ошибка при отсутствии номера')
     def test_get_order_without_track(self):
-        response = requests.get(f'{Url.MAIN_URL}{Url.Get_ORDER_BY_NUMBER}')
-        assert response.status_code == 400
+        with allure.step("Запрос заказа без номера трека"):
+            response = requests.get(f'{Url.MAIN_URL}{Url.Get_ORDER_BY_NUMBER}')
+        # Исправить: использовать правильный объект ResponseBody
+        assert response.status_code == StatusCode.BAD_REQUEST and response.json() == ResponseBody.ORDER_TRACK_MISSING
 
     @allure.title('Ошибка при несуществующем номере')
     def test_get_order_nonexistent_track(self):
-        response = requests.get(f'{Url.MAIN_URL}{Url.Get_ORDER_BY_NUMBER}?t=999999')
-        assert response.status_code == 404
+        with allure.step("Запрос заказа с несуществующим треком"):
+            response = requests.get(f'{Url.MAIN_URL}{Url.Get_ORDER_BY_NUMBER}?t={TestData.NONEXISTENT_TRACK_NUMBER}')
+        # Исправить: использовать правильный объект ResponseBody
+        assert response.status_code == StatusCode.NOT_FOUND and response.json() == ResponseBody.ORDER_NOT_FOUND

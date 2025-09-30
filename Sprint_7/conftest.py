@@ -1,7 +1,58 @@
 import pytest
 import requests
 import generators
-from data import Url
+from urls import Url
+from data import DataForOrder, Flags
+
+
+@pytest.fixture
+def create_order():
+    """Фикстура для создания заказа с автоматической отменой после теста"""
+    order_response = requests.post(f'{Url.MAIN_URL}{Url.POST_CREATING_ORDER}', json=DataForOrder.ORDER_DATA_FOR_TRACK_TEST)  # Использовать из data.py
+    order_track = order_response.json()["track"]
+    
+    yield order_track
+    
+    requests.put(f'{Url.MAIN_URL}{Url.ORDER_CANCEL}', params={"track": order_track})
+
+
+@pytest.fixture
+def create_order_with_id():
+    """Фикстура для создания заказа с возвратом track и ID"""
+    order_response = requests.post(f'{Url.MAIN_URL}{Url.POST_CREATING_ORDER}', json=DataForOrder.ORDER_DATA_FOR_TRACK_TEST)  # Использовать из data.py
+    order_track = order_response.json()["track"]
+    order_id = requests.get(f'{Url.MAIN_URL}{Url.Get_ORDER_BY_NUMBER}?t={order_track}').json().get("order", {}).get("id")
+    
+    yield order_track, order_id
+    
+    requests.put(f'{Url.MAIN_URL}{Url.ORDER_CANCEL}', params={"track": order_track})
+
+@pytest.fixture
+def create_test_order():
+    """Фикстура для создания тестового заказа с автоматической отменой"""
+    def _create_order(order_data):
+        response = requests.post(f'{Url.MAIN_URL}{Url.POST_CREATING_ORDER}', json=order_data)
+        track_number = response.json()[Flags.SUCCESSFUL_ORDER_CREATION]
+        
+        # Возвращаем и response и track_number для проверок в тесте
+        yield response, track_number
+        
+        # Пост-условие: отмена заказа (выполняется после теста)
+        requests.put(f'{Url.MAIN_URL}{Url.ORDER_CANCEL}', json={"track": track_number})
+    
+    return _create_order
+
+@pytest.fixture
+def create_order_for_accept_test():
+    """Фикстура для создания заказа специально для тестов принятия заказа"""
+    order_response = requests.post(f'{Url.MAIN_URL}{Url.POST_CREATING_ORDER}', json=DataForOrder.VALID_ORDER_DATA_2)
+    order_track = order_response.json()["track"]
+    order_id = requests.get(f'{Url.MAIN_URL}{Url.Get_ORDER_BY_NUMBER}?t={order_track}').json().get("order", {}).get("id")
+    
+    yield order_track, order_id  # Возвращаем track и ID заказа
+    
+    # Пост-условие: отмена заказа (выполнится автоматически после теста)
+    requests.put(f'{Url.MAIN_URL}{Url.ORDER_CANCEL}', params={"track": order_track})
 
 
 @pytest.fixture
