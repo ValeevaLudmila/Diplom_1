@@ -13,7 +13,6 @@ class TestGetOrderByTrack:
         track = order_response.json()["track"]
         with allure.step("Получить заказ по треку"):
             response = requests.get(f'{Url.MAIN_URL}{Url.Get_ORDER_BY_NUMBER}?t={track}')
-        # Проверка успешного ответа - верно
         assert response.status_code == StatusCode.OK and Flags.ORDER_IN_RESPONSE in response.json()
         with allure.step("Отменить заказ"):
             requests.put(f'{Url.MAIN_URL}{Url.ORDER_CANCEL}', params={"track": track})
@@ -22,12 +21,11 @@ class TestGetOrderByTrack:
     def test_get_order_without_track(self):
         with allure.step("Запрос заказа без номера трека"):
             response = requests.get(f'{Url.MAIN_URL}{Url.Get_ORDER_BY_NUMBER}')
-        # Исправить: использовать правильный объект ResponseBody
         assert response.status_code == StatusCode.BAD_REQUEST and response.json() == ResponseBody.ORDER_TRACK_MISSING
 
     @allure.title('Ошибка при несуществующем номере')
     def test_get_order_nonexistent_track(self):
         with allure.step("Запрос заказа с несуществующим треком"):
             response = requests.get(f'{Url.MAIN_URL}{Url.Get_ORDER_BY_NUMBER}?t={TestData.NONEXISTENT_TRACK_NUMBER}')
-        # Исправить: использовать правильный объект ResponseBody
-        assert response.status_code == StatusCode.NOT_FOUND and response.json() == ResponseBody.ORDER_NOT_FOUND
+        assert response.status_code == StatusCode.NOT_FOUND
+        assert response.json() == ResponseBody.ORDER_BY_TRACK_NOT_FOUND

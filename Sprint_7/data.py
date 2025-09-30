@@ -92,14 +92,22 @@ class DataForRegistration:
 
 
 class ResponseBody:
+    # Успешные ответы
     COURIER_CREATION_SUCCESS = {'ok': True}
     ORDER_ACCEPT_SUCCESS = {'ok': True}
+    
+    # Ошибки курьеров
     COURIER_NAME_ALREADY_EXIST = {'code': 409, 'message': 'Этот логин уже используется. Попробуйте другой.'}
     COURIER_REGISTRATION_NOT_ENOUGH_DATA = {'code': 400, 'message': 'Недостаточно данных для создания учетной записи'}
-    COURIER_ACCOUNT_NOT_FOUND = {"code": 404, "message": "Учетная запись не найдена"}
-    COURIER_LOGIN_NOT_ENOUCH_DATA = {'code': 400, 'message': 'Недостаточно данных для входа'}
-    ORDER_NOT_FOUND = {"code": 404, "message": "Заказ не найден"}
+    COURIER_LOGIN_NOT_ENOUGH_DATA = {'code': 400, 'message': 'Недостаточно данных для входа'}
+    COURIER_LOGIN_NOT_FOUND = {"code": 404, "message": "Учетная запись не найдена"}
+    COURIER_ACCOUNT_NOT_FOUND = {"code": 404, "message": "Курьера с таким id не существует"}
+    
+    # Ошибки заказов
+    ORDER_NOT_FOUND = {"code": 404, "message": "Заказа с таким id не существует"}
+    ORDER_BY_TRACK_NOT_FOUND = {"code": 404, "message": "Заказ не найден"}
     ORDER_TRACK_MISSING = {'code': 400, 'message': 'Недостаточно данных для поиска'}
+
 
 class Flags:
     SUCCESSFUL_ORDER_CREATION = 'track'

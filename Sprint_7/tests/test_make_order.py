@@ -12,44 +12,34 @@ from data import DataForOrder, StatusCode, TestData, ResponseBody, Flags
 
 class TestOrderCreation:
 
-    # ОТДЕЛЬНЫЕ ТЕСТЫ ДЛЯ КАЖДОГО ТИПА ЦВЕТА:
 
     @pytest.mark.parametrize("color_data", [
         ["BLACK"], 
         ["GREY"], 
         ["BLACK", "GREY"]
     ])
+    
     @allure.title('Создание заказа с цветами: {color_data}')
     def test_create_order_with_colors(self, color_data, create_test_order):
         order_data = DataForOrder.order_data.copy()
         order_data["color"] = color_data
-
-        # Используем фикстуру вместо ручного создания и отмены
         response, track_number = next(create_test_order(order_data))
-    
         self._verify_successful_order_creation(response, track_number)
 
     @allure.title('Создание заказа с пустым массивом цветов')
     def test_create_order_with_empty_colors(self, create_test_order):
         order_data = DataForOrder.order_data.copy()
         order_data["color"] = []
-
-        # Используем фикстуру
         response, track_number = next(create_test_order(order_data))
-    
         self._verify_successful_order_creation(response, track_number)
 
     @allure.title('Создание заказа без поля color')
     def test_create_order_without_color_field(self, create_test_order):
         order_data = DataForOrder.order_data.copy()
-        del order_data["color"]  # Удаляем поле color полностью
-
-        # Используем фикстуру
-        response, track_number = next(create_test_order(order_data))
-    
+        del order_data["color"]
+        response, track_number = next(create_test_order(order_data))    
         self._verify_successful_order_creation(response, track_number)
 
-    # Вспомогательный метод для проверки успешного создания заказа
     def _verify_successful_order_creation(self, response, track_number):
         assert response.status_code == StatusCode.CREATED
         assert isinstance(response.json(), dict), "Ответ должен быть словарем"
