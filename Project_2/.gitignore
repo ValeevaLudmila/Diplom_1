@@ -1,51 +1,24 @@
-# Python
+echo "# Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
 
-# Virtual environments
-venv/
-env/
-ENV/
-
-# IDE
 .vscode/
 .idea/
 *.swp
-*.swo
 
-# OS
 .DS_Store
 Thumbs.db
 
-# Coverage reports
-htmlcov/
-.coverage
-.coverage.*
-.coverage
-.pytest_cache/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# Temporary files
-*.tmp
-*.temp
+/Sprint 55/
+/Sprint 63/
+/Sprint52/
+/Sprint_5/
+/Sprint_53/
+/Sprint_54/
+/Sprint_6/
+/Sprint_64/
+/Sprint_73/
+/Sprint_74/" > .gitignore
