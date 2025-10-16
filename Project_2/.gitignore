@@ -1,24 +1,37 @@
-echo "# Python
+
+@"
+
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+ENV/
+
 .pytest_cache/
 .coverage
 htmlcov/
+.coverage.*
+.cache
 
 .vscode/
 .idea/
 *.swp
+*.swo
 
 .DS_Store
 Thumbs.db
 
-/Sprint 55/
-/Sprint 63/
-/Sprint52/
-/Sprint_5/
-/Sprint_53/
-/Sprint_54/
-/Sprint_6/
-/Sprint_64/
-/Sprint_73/
-/Sprint_74/" > .gitignore
+../Sprint 55/
+../Sprint 63/
+../Sprint52/
+../Sprint_5/
+../Sprint_53/
+../Sprint_54/
+../Sprint_6/
+../Sprint_64/
+../Sprint_73/
+../Sprint_74/
+"@ | Out-File -FilePath .gitignore -Encoding UTF8
