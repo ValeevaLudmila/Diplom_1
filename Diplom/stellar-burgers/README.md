@@ -13,4 +13,4 @@ pytest --cov=praktikum --cov-report=html
 
 ### Установка зависимостей
 
-pip install -r requirements.txt 
+pip install -r requirements.txt
