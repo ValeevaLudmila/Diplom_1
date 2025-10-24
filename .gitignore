@@ -1,6 +1,3 @@
-# Создаем правильный .gitignore который РАЗРЕШАЕТ htmlcov
-@"
-# Python
 __pycache__/
 *.pyc
 *.pyo
@@ -10,25 +7,19 @@ venv/
 env/
 ENV/
 
-# Testing - разрешаем htmlcov!
 .pytest_cache/
 .coverage
 .coverage.*
 .cache
-# htmlcov/  <-- ЗАКОММЕНТИРОВАНО или УДАЛЕНО
 
-# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# OS
 .DS_Store
 Thumbs.db
 
-# Exclude sibling directories but allow our files
 ../*/
 !.gitignore
 !htmlcov/
-"@ | Out-File -FilePath .gitignore -Encoding UTF8
