@@ -1,13 +1,15 @@
-"""Тесты для класса Database."""
 import pytest
 from unittest.mock import patch, Mock
 from praktikum.database import Database
 from praktikum.bun import Bun
 from praktikum.ingredient import Ingredient
 from praktikum.ingredient_types import INGREDIENT_TYPE_SAUCE, INGREDIENT_TYPE_FILLING
-
-EXPECTED_BUNS_COUNT = 3
-EXPECTED_INGREDIENTS_COUNT = 6
+from data import (
+    EXPECTED_BUNS_COUNT,
+    EXPECTED_INGREDIENTS_COUNT,
+    BUN_NAMES,
+    INGREDIENT_PRICES,
+)
 
 
 class TestDatabase:
@@ -29,9 +31,8 @@ class TestDatabase:
         assert all(isinstance(bun, Bun) for bun in buns)
         
         bun_names = [bun.get_name() for bun in buns]
-        assert "black bun" in bun_names
-        assert "white bun" in bun_names
-        assert "red bun" in bun_names
+        for name in BUN_NAMES:
+            assert name in bun_names
 
     def test_available_ingredients_returns_all_ingredients(self):
         """Тест available_ingredients возвращает все ингредиенты."""
@@ -51,7 +52,7 @@ class TestDatabase:
         ingredients = db.available_ingredients()
         
         prices = [ingredient.get_price() for ingredient in ingredients]
-        assert all(price in [100.0, 200.0, 300.0] for price in prices)
+        assert all(price in INGREDIENT_PRICES for price in prices)
 
     @patch('praktikum.database.Bun')
     @patch('praktikum.database.Ingredient')

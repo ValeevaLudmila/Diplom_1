@@ -1,27 +1,34 @@
-"""Фикстуры для тестов бургерной."""
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import pytest
-from unittest.mock import Mock
 from praktikum.bun import Bun
 from praktikum.ingredient import Ingredient
 from praktikum.ingredient_types import INGREDIENT_TYPE_SAUCE, INGREDIENT_TYPE_FILLING
+from data import (
+    TEST_BUN_NAME_RU as TEST_BUN_NAME,
+    TEST_BUN_PRICE,
+    TEST_SAUCE_NAME_RU as TEST_SAUCE_NAME,
+    TEST_SAUCE_PRICE,
+    FILLING_NAME as TEST_FILLING_NAME,
+    FILLING_PRICE as TEST_FILLING_PRICE
+)
 
 
 @pytest.fixture
 def sample_bun():
     """Фикстура для создания тестовой булочки."""
-    return Bun("black bun", 100.0)
-
+    return Bun(TEST_BUN_NAME, TEST_BUN_PRICE)
 
 @pytest.fixture
 def sample_sauce():
     """Фикстура для создания тестового соуса."""
-    return Ingredient(INGREDIENT_TYPE_SAUCE, "hot sauce", 100.0)
-
+    return Ingredient(INGREDIENT_TYPE_SAUCE, TEST_SAUCE_NAME, TEST_SAUCE_PRICE)
 
 @pytest.fixture
 def sample_filling():
     """Фикстура для создания тестовой начинки."""
-    return Ingredient(INGREDIENT_TYPE_FILLING, "cutlet", 100.0)
+    return Ingredient(INGREDIENT_TYPE_FILLING, TEST_FILLING_NAME, TEST_FILLING_PRICE)
 
 
 @pytest.fixture
